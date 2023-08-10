@@ -1,511 +1,241 @@
 <!DOCTYPE html>
-
-
-
 <html>
-
-
-
   <head>
-
     <title>List App</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <style>
-
       body {
-
         font-family: Arial, sans-serif;
-
         padding: 20px;
-
         background-color: #f8f8f8;
-
       }
-
-
-
       h1 {
-
         margin-bottom: 20px;
-
         text-align: center;
-
         color: #333;
-
       }
-
-
-
       .container {
-
         max-width: 600px;
-
         margin: 0 auto;
-
         background-color: #fff;
-
         padding: 20px;
-
         border-radius: 5px;
-
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
       }
-
-
-
       ul {
-
         list-style-type: none;
-
         padding: 0;
-
       }
-
-
-
       li {
-
         margin-bottom: 10px;
-
         padding: 15px;
-
         background-color: #007bff;
-
         color: #fff;
-
         cursor: pointer;
-
         border-radius: 5px;
-
         transition: background-color 0.3s;
-
       }
-
-
-
       li:hover {
-
         background-color: #0056b3;
-
       }
-
-
-
       li span {
-
         margin-right: 10px;
-
       }
-
-
-
       textarea {
-
-        width: 100%;
-
-        height: 150px;
-
+        width: 95%;
+        height: 300px;
         resize: vertical;
-
         margin-bottom: 10px;
-
         border: 1px solid #ccc;
-
         border-radius: 8px;
-
         font-family: Arial, sans-serif;
-
         font-size: 14px;
-
         padding: 10px;
-
       }
-
-
-
       .add-button {
-
         display: block;
-
-        width: 100%;
-
+        width: 99%;
         padding: 12px 16px;
-
         background-color: #007bff;
-
         color: #fff;
-
         border: none;
-
         border-radius: 5px;
-
         cursor: pointer;
-
         font-family: Arial, sans-serif;
-
         font-size: 16px;
-
         transition: background-color 0.3s;
-
       }
-
-
-
       .add-button:hover {
-
         background-color: #0056b3;
-
       }
-
-
-
       .hidden {
-
         display: none;
-
       }
-
-
-
       .footer {
-
         margin-top: 20px;
-
         display: flex;
-
         align-items: center;
-
         justify-content: space-between;
-
       }
-
-
-
       .total-items {
-
         font-size: 14px;
-
         color: #666;
-
       }
-
-
-
       .reload-button {
-
         background-color: #007bff;
-
         color: #fff;
-
         border: none;
-
         border-radius: 5px;
-
         padding: 8px 16px;
-
         font-family: Arial, sans-serif;
-
         font-size: 14px;
-
         cursor: pointer;
-
         transition: background-color 0.3s;
-
       }
-
-
-
       .reload-button:hover {
-
         background-color: #0056b3;
-
       }
-
-
-
-      /* Media Query untuk perangkat mobile */
-
+      #filter-input {
+        width: 95%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
       @media (max-width: 480px) {
-
         .container {
-
           padding: 10px;
-
         }
-
-
-
         h1 {
-
           font-size: 24px;
-
           margin-bottom: 10px;
-
         }
-
-
-
         textarea {
-
-          height: 100px;
-
           font-size: 12px;
-
         }
-
-
-
         .add-button {
-
           padding: 8px 12px;
-
           font-size: 14px;
-
         }
-
-
-
-.total {
-
-    margin-bottom: 10px;
-
-}
-
-
-
+        .total {
+          margin-bottom: 10px;
+        }
         .footer {
-
           margin-top: 10px;
-
         }
-
-
-
         .total-items {
-
           font-size: 12px;
-
         }
-
-
-
         .reload-button {
-
           padding: 6px 12px;
-
           font-size: 12px;
-
         }
-
       }
-
     </style>
-
   </head>
-
   <body>
-
     <div class="container">
-
-      <h1>List App</h1>
-
+      <h1>List App V.2</h1>
       <section class="total">
-
-<div class="total-items" id="total-items">Total Item: 0</div>
-
-</section>
-
-
-
+        <div class="total-items" id="total-items">Total Item: 0</div>
+      </section>
       <textarea id="item-input" placeholder='Masukkan daftar item dalam format: ["Apel", "Jeruk", "Pisang"]'></textarea>
-
+      <input id="filter-input" type="text" placeholder="Filter berdasarkan kata" />
       <button id="add-button" class="add-button">Tambah</button>
-
-
-
       <ul id="list">
-
         <!-- Daftar akan dibuat secara dinamis di sini -->
-
       </ul>
-
-
-
       <div class="footer">
-
-        
-
         <button class="reload-button" onclick="location.reload()">Reload</button>
-
       </div>
-
     </div>
+    <script>
+      var items = [];
+      document.addEventListener("DOMContentLoaded", function (event) {
+        var addButton = document.getElementById("add-button");
+        var itemInput = document.getElementById("item-input");
+        var list = document.getElementById("list");
+        var totalItems = document.getElementById("total-items");
+        var filterInput = document.getElementById("filter-input");
 
+        addButton.addEventListener("click", function () {
+          var inputItems = parseInput(itemInput.value);
+          if (Array.isArray(inputItems)) {
+            inputItems.forEach(function (item) {
+              if (typeof item === "string") {
+                items.push(item);
+              }
+            });
+            removeDuplicates();
 
-
-<script>
-
-  var items = [];
-
-
-
-  document.addEventListener("DOMContentLoaded", function (event) {
-
-    var addButton = document.getElementById("add-button");
-
-    var itemInput = document.getElementById("item-input");
-
-    var list = document.getElementById("list");
-
-    var totalItems = document.getElementById("total-items");
-
-
-
-    addButton.addEventListener("click", function () {
-
-      var inputItems = JSON.parse(itemInput.value);
-
-      if (Array.isArray(inputItems)) {
-
-        inputItems.forEach(function (item) {
-
-          if (typeof item === "string") {
-
-            items.push(item);
-
+            var filterKeyword = filterInput.value.toLowerCase();
+            items = items.filter(function (item) {
+              return item.toLowerCase().includes(filterKeyword);
+            });
           }
-
+          itemInput.value = "";
+          renderList();
         });
-
-        removeDuplicates(); // Panggil fungsi untuk menghapus elemen duplikat
-
-      }
-
-
-
-      itemInput.value = "";
-
-      renderList();
-
-    });
-
-
-
-    function renderList() {
-
-      list.innerHTML = "";
-
-      items.forEach(function (itemText, index) {
-
-        var item = document.createElement("li");
-
-        item.innerHTML = "<span>" + (index + 1) + ".</span>" + itemText;
-
-        item.addEventListener("click", function () {
-
-          copyToClipboard(itemText);
-
-          this.remove();
-
-          showNextItem();
-
+        function parseInput(input) {
+          try {
+            return JSON.parse(input);
+          } catch (error) {
+            // Handle petik satu ('') atau petik dua ("")
+            var sanitizedInput = input.replace(/'/g, '"');
+            return JSON.parse(sanitizedInput);
+          }
+        }
+        function renderList() {
+          list.innerHTML = "";
+          items.forEach(function (itemText, index) {
+            var item = document.createElement("li");
+            item.innerHTML = "<span>" + (index + 1) + ".</span>" + itemText;
+            item.addEventListener("click", function () {
+              copyToClipboard(itemText);
+              this.remove();
+              showNextItem();
+              updateTotalItems();
+            });
+            list.appendChild(item);
+          });
           updateTotalItems();
-
-        });
-
-        list.appendChild(item);
-
+          if (items.length > 0) {
+            itemInput.classList.add("hidden");
+            addButton.classList.add("hidden");
+            filterInput.classList.add("hidden");
+            list.style.display = "block";
+            showNextItem();
+          } else {
+            itemInput.classList.remove("hidden");
+            addButton.classList.remove("hidden");
+            filterInput.classList.remove("hidden");
+            list.style.display = "none";
+          }
+        }
+        function copyToClipboard(text) {
+          var tempInput = document.createElement("input");
+          tempInput.value = text;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          document.execCommand("copy");
+          document.body.removeChild(tempInput);
+        }
+        function showNextItem() {
+          var listItems = document.querySelectorAll("#list li");
+          if (listItems.length > 0) {
+            listItems[0].style.backgroundColor = "#007bff";
+          }
+        }
+        function updateTotalItems() {
+          totalItems.innerText = "Total Item: " + items.length;
+        }
+        function removeDuplicates() {
+          items = [...new Set(items)];
+        }
+        renderList();
       });
-
-
-
-      updateTotalItems();
-
-
-
-      if (items.length > 0) {
-
-        itemInput.classList.add("hidden");
-
-        addButton.classList.add("hidden");
-
-        list.style.display = "block";
-
-        showNextItem();
-
-      } else {
-
-        itemInput.classList.remove("hidden");
-
-        addButton.classList.remove("hidden");
-
-        list.style.display = "none";
-
-      }
-
-    }
-
-
-
-    function copyToClipboard(text) {
-
-      var tempInput = document.createElement("input");
-
-      tempInput.value = text;
-
-      document.body.appendChild(tempInput);
-
-      tempInput.select();
-
-      document.execCommand("copy");
-
-      document.body.removeChild(tempInput);
-
-    }
-
-
-
-    function showNextItem() {
-
-      var listItems = document.querySelectorAll("#list li");
-
-      if (listItems.length > 0) {
-
-        listItems[0].style.backgroundColor = "#007bff";
-
-      }
-
-    }
-
-
-
-    function updateTotalItems() {
-
-      totalItems.innerText = "Total Item: " + items.length;
-
-    }
-
-
-
-    function removeDuplicates() {
-
-      items = [...new Set(items)];
-
-    }
-
-
-
-    renderList(); // Untuk merender daftar item awal saat halaman dimuat
-
-  });
-
-</script>
-
-
-
+    </script>
   </body>
-
 </html>
