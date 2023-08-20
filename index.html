@@ -655,50 +655,18 @@
 
 
           if (Array.isArray(inputItems)) {
+if (Array.isArray(inputItems)) {
+  inputItems.forEach(function (item) {
+    if (typeof item === "string" && !items.includes(item)) {
+      items.push(item);
+    }
+  });
 
+  var filterKeyword = filterInput.value.toLowerCase();
 
-
-            inputItems.forEach(function (item) {
-
-
-
-              if (typeof item === "string") {
-
-
-
-                items.push(item);
-
-
-
-              }
-
-
-
-            });
-
-
-
-            removeDuplicates();
-
-
-
-
-
-
-
-            var filterKeyword = filterInput.value.toLowerCase();
-
-
-
-            items = items.filter(function (item) {
-
-
-
-              return item.toLowerCase().includes(filterKeyword);
-
-
-
-            });
+  items = items.filter(function (item) {
+    return item.toLowerCase().includes(filterKeyword);
+  });
 
 
 
