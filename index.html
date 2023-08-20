@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>List App V.3</title>
+  <title>List App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
@@ -167,88 +167,106 @@
       <button class="reload-button" onclick="location.reload()">Reload</button>
     </div>
   </div>
-  <script>
-    var items = [];
-    document.addEventListener("DOMContentLoaded", function (event) {
-      var addButton = document.getElementById("add-button");
-      var itemInput = document.getElementById("item-input");
-      var list = document.getElementById("list");
-      var totalItems = document.getElementById("total-items");
-      var filterInput = document.getElementById("filter-input");
-      addButton.addEventListener("click", function () {
-        var inputItems = parseInput(itemInput.value);
-        if (Array.isArray(inputItems)) {
-          inputItems.forEach(function (item) {
-            if (typeof item === "string" && !items.includes(item)) {
-              items.push(item);
+    <script>
+      var items = [];
+      document.addEventListener("DOMContentLoaded", function (event) {
+        var addButton = document.getElementById("add-button");
+        var itemInput = document.getElementById("item-input");
+        var list = document.getElementById("list");
+        var totalItems = document.getElementById("total-items");
+        var filterInput = document.getElementById("filter-input");
+
+        addButton.addEventListener("click", function () {
+          var inputItems = parseInput(itemInput.value);
+          if (Array.isArray(inputItems)) {
+            inputItems.forEach(function (item) {
+              if (typeof item === "string") {
+                items.push(item);
+              }
+            });
+
+            removeDuplicates();
+
+            var filterKeyword = filterInput.value.toLowerCase();
+            items = items.filter(function (item) {
+              return item.toLowerCase().includes(filterKeyword);
+            });
+          }
+
+          itemInput.value = "";
+          renderList();
+        });
+
+        function parseInput(input) {
+          try {
+            return JSON.parse(input);
+          } catch (error) {
+            var sanitizedInput = input.replace(/'/g, '"');
+            return JSON.parse(sanitizedInput);
+          }
+        }
+
+        function removeDuplicates() {
+          var uniqueItems = [];
+          items.forEach(function (item) {
+            var cleanItem = item.replace(/^\d+\.\s*/, ''); // Remove the number and dot at the beginning
+            if (!uniqueItems.includes(cleanItem)) {
+              uniqueItems.push(cleanItem);
             }
           });
-          var filterKeyword = filterInput.value.toLowerCase();
-          items = items.filter(function (item) {
-            return item.toLowerCase().includes(filterKeyword);
-          });
+          items = uniqueItems;
         }
-        itemInput.value = "";
+
+        function renderList() {
+          list.innerHTML = "";
+          items.forEach(function (itemText, index) {
+            var item = document.createElement("li");
+            item.innerHTML = "<span>" + (index + 1) + ".</span>" + itemText.replace(/^\d+\.\s*/, '');
+            item.addEventListener("click", function () {
+              copyToClipboard(itemText);
+              this.remove();
+              showNextItem();
+              updateTotalItems();
+            });
+            list.appendChild(item);
+          });
+          updateTotalItems();
+          if (items.length > 0) {
+            itemInput.classList.add("hidden");
+            addButton.classList.add("hidden");
+            filterInput.classList.add("hidden");
+            list.style.display = "block";
+            showNextItem();
+          } else {
+            itemInput.classList.remove("hidden");
+            addButton.classList.remove("hidden");
+            filterInput.classList.remove("hidden");
+            list.style.display = "none";
+          }
+        }
+
+        function copyToClipboard(text) {
+          var tempInput = document.createElement("input");
+          tempInput.value = text;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          document.execCommand("copy");
+          document.body.removeChild(tempInput);
+        }
+
+        function showNextItem() {
+          var listItems = document.querySelectorAll("#list li");
+          if (listItems.length > 0) {
+            listItems[0].style.backgroundColor = "#007bff";
+          }
+        }
+
+        function updateTotalItems() {
+          totalItems.innerText = "Total Item: " + items.length;
+        }
+
         renderList();
       });
-      function parseInput(input) {
-        try {
-          return JSON.parse(input);
-        } catch (error) {
-          var sanitizedInput = input.replace(/'/g, '"');
-          return JSON.parse(sanitizedInput);
-        }
-      }
-      function renderList() {
-        list.innerHTML = "";
-        items.forEach(function (itemText, index) {
-          var item = document.createElement("li");
-          item.innerHTML = "<span>" + (index + 1) + ".</span>" + itemText.replace(/^\d+\.\s*/, '');
-          itemText = itemText.replace(/^\d+\.\s*/, ''); // Remove the number and dot at the beginning
-          item.addEventListener("click", function () {
-            copyToClipboard(itemText);
-            this.remove();
-            showNextItem();
-            updateTotalItems();
-          });
-          list.appendChild(item);
-        });
-        updateTotalItems();
-        if (items.length > 0) {
-          itemInput.classList.add("hidden");
-          addButton.classList.add("hidden");
-          filterInput.classList.add("hidden");
-          list.style.display = "block";
-          showNextItem();
-        } else {
-          itemInput.classList.remove("hidden");
-          addButton.classList.remove("hidden");
-          filterInput.classList.remove("hidden");
-          list.style.display = "none";
-        }
-      }
-      function copyToClipboard(text) {
-        var tempInput = document.createElement("input");
-        tempInput.value = text;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand("copy");
-        document.body.removeChild(tempInput);
-      }
-      function showNextItem() {
-        var listItems = document.querySelectorAll("#list li");
-        if (listItems.length > 0) {
-          listItems[0].style.backgroundColor = "#007bff";
-        }
-      }
-      function updateTotalItems() {
-        totalItems.innerText = "Total Item: " + items.length;
-      }
-      function removeDuplicates() {
-        items = [...new Set(items)];
-      }
-      renderList();
-    });
-  </script>
+    </script>
 </body>
 </html>
