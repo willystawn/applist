@@ -2,7 +2,7 @@
 
 AppList adalah aplikasi sederhana yang memungkinkan Anda menghasilkan daftar item dari sebuah array, dan kemudian dengan mudah menyalin daftar tersebut ke clipboard Anda. Praktis untuk membuat daftar, list, atau apapun yang Anda butuhkan!
 
-![AppList Screenshot](https://wilisetiawan.github.io/applist/screenshot.png)
+![AppList Screenshot](https://wilisetiawan.github.io/applist/screenshoot.png)
 
 🚀 **Coba Sekarang**: [Buka AppList](https://wilisetiawan.github.io/applist/)
 
